@@ -244,31 +244,29 @@ export default function App() {
     ];
     keysToRemove.forEach(k => localStorage.removeItem(k));
 
-    // 2. Re-seed React states
+    // 2. Re-seed React states with zero values
     setActiveMonth("2026-07");
+    const zeroCategories = INITIAL_CATEGORIES.map(cat => ({ ...cat, budgeted: 0 }));
     setMonthsState({
       "2026-07": {
         monthId: "2026-07",
-        categories: INITIAL_CATEGORIES,
-        transactions: INITIAL_TRANSACTIONS,
-        incomeSources: INITIAL_INCOME_SOURCES
+        categories: zeroCategories,
+        transactions: [],
+        incomeSources: []
       }
     });
     setCreditCards([
-      { id: 'card-disc', name: 'Discover Card', currentBalance: 245.00, creditLimit: 5000, dueDate: '2026-07-15', statementClosingDate: '2026-07-08' },
-      { id: 'card-chase', name: 'Chase Sapphire', currentBalance: 120.00, creditLimit: 12000, dueDate: '2026-07-04', statementClosingDate: '2026-07-01' },
+      { id: 'card-disc', name: 'Discover Card', currentBalance: 0, creditLimit: 5000, dueDate: '2026-07-15', statementClosingDate: '2026-07-08' },
+      { id: 'card-chase', name: 'Chase Sapphire', currentBalance: 0, creditLimit: 12000, dueDate: '2026-07-04', statementClosingDate: '2026-07-01' },
     ]);
-    setBankAccount({ id: 'bank-checking', name: 'Chase Liquidity Checking', balance: 4520.00, type: 'checking' });
+    setBankAccount({ id: 'bank-checking', name: 'Chase Liquidity Checking', balance: 0, type: 'checking' });
     setActiveTab('budget');
-    setSavingsGoals([
-      { id: 'goal-1', name: 'Emergency Fund', targetAmount: 10000, currentAmount: 4520, targetDate: '2026-12-31', category: 'Savings' },
-      { id: 'goal-2', name: 'Europe Summer Vacation', targetAmount: 3000, currentAmount: 1200, targetDate: '2026-08-15', category: 'Savings' }
-    ]);
-    setRecurringItems(INITIAL_RECURRING);
+    setSavingsGoals([]);
+    setRecurringItems([]);
     setLearnedMappings({});
     setResetConfirmState(false);
 
-    showToast("Application successfully reverted to clean demo defaults!");
+    showToast("Application successfully reset. All budgets, transactions, and balances are set to zero!");
   };
 
   // Retrieve current active month state, or initialize if empty
@@ -828,7 +826,7 @@ export default function App() {
                   value={naturalInput}
                   onChange={e => setNaturalInput(e.target.value)}
                   placeholder='Type manual shorthand (e.g., "$52 for tjmax shopping shoes" or "$12.50 starbucks") then choose Parse mode...'
-                  className="w-full bg-transparent border-none text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-0 font-mono"
+                  className="w-full bg-slate-50 dark:bg-slate-900/50 border border-technical-border rounded px-3 py-2 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-accent-green focus:ring-1 focus:ring-accent-green/20 font-mono"
                   disabled={isAiLoading}
                 />
               </div>
