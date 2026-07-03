@@ -1,0 +1,6 @@
+{
+  "name": "VibeBudget",
+  "description": "Zero-Based Budgeting web application with client-side OCR statement parsing, credit card tracking, multi-month budgeting, and visual insights.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

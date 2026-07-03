@@ -1,0 +1,21 @@
+{
+  "short_name": "VibeBudget",
+  "name": "VibeBudget - Zero-Based Budgeting",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=192&h=192&fit=crop",
+      "type": "image/jpeg",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=512&h=512&fit=crop",
+      "type": "image/jpeg",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#020617",
+  "theme_color": "#06b6d4",
+  "display": "standalone",
+  "orientation": "portrait"
+}
