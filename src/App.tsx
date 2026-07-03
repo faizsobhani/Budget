@@ -211,6 +211,66 @@ export default function App() {
     }
   }, [isDarkMode]);
 
+  // Confirmation state for data reset
+  const [resetConfirmState, setResetConfirmState] = useState<boolean>(false);
+
+  // Automatically reset the confirmation after 4 seconds of inactivity
+  useEffect(() => {
+    if (resetConfirmState) {
+      const timer = setTimeout(() => {
+        setResetConfirmState(false);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [resetConfirmState]);
+
+  // Reset all application data and revert to beautifully seeded defaults
+  const handleResetData = () => {
+    if (!resetConfirmState) {
+      setResetConfirmState(true);
+      showToast("Click the button again within 4 seconds to confirm full reset!");
+      return;
+    }
+
+    // 1. Clear local storage keys
+    const keysToRemove = [
+      'vibebudget_months',
+      'vibebudget_cards',
+      'vibebudget_bank',
+      'vibebudget_recurring',
+      'vibebudget_learned',
+      'vibebudget_active_tab',
+      'vibebudget_savings_goals'
+    ];
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+
+    // 2. Re-seed React states
+    setActiveMonth("2026-07");
+    setMonthsState({
+      "2026-07": {
+        monthId: "2026-07",
+        categories: INITIAL_CATEGORIES,
+        transactions: INITIAL_TRANSACTIONS,
+        incomeSources: INITIAL_INCOME_SOURCES
+      }
+    });
+    setCreditCards([
+      { id: 'card-disc', name: 'Discover Card', currentBalance: 245.00, creditLimit: 5000, dueDate: '2026-07-15', statementClosingDate: '2026-07-08' },
+      { id: 'card-chase', name: 'Chase Sapphire', currentBalance: 120.00, creditLimit: 12000, dueDate: '2026-07-04', statementClosingDate: '2026-07-01' },
+    ]);
+    setBankAccount({ id: 'bank-checking', name: 'Chase Liquidity Checking', balance: 4520.00, type: 'checking' });
+    setActiveTab('budget');
+    setSavingsGoals([
+      { id: 'goal-1', name: 'Emergency Fund', targetAmount: 10000, currentAmount: 4520, targetDate: '2026-12-31', category: 'Savings' },
+      { id: 'goal-2', name: 'Europe Summer Vacation', targetAmount: 3000, currentAmount: 1200, targetDate: '2026-08-15', category: 'Savings' }
+    ]);
+    setRecurringItems(INITIAL_RECURRING);
+    setLearnedMappings({});
+    setResetConfirmState(false);
+
+    showToast("Application successfully reverted to clean demo defaults!");
+  };
+
   // Retrieve current active month state, or initialize if empty
   const currentMonthState: MonthState = monthsState[activeMonth] || {
     monthId: activeMonth,
@@ -221,7 +281,7 @@ export default function App() {
 
   const showToast = (msg: string) => {
     setNotification(msg);
-    setTimeout(() => setNotification(null), 4000);
+    setTimeout(() => setNotification(null), 4500);
   };
 
   // Switch month or start new
@@ -705,22 +765,22 @@ export default function App() {
         </div>
 
         {/* Global Toolbar and Selection */}
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
           {/* Light/Dark Theme Toggle (User Request) */}
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
-            className="border border-technical-border hover:bg-slate-50 dark:hover:bg-slate-800 p-2.5 rounded text-slate-500 dark:text-slate-400 transition cursor-pointer bg-white dark:bg-slate-900"
+            className="border border-technical-border hover:bg-slate-50 dark:hover:bg-slate-800 p-2.5 rounded text-slate-500 dark:text-slate-400 transition cursor-pointer bg-white dark:bg-slate-900 shrink-0"
             title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
             {isDarkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-slate-700" />}
           </button>
 
           {/* Month selector dropdown */}
-          <div className="relative flex-grow sm:flex-grow-0">
+          <div className="relative flex-grow sm:flex-grow-0 min-w-[110px]">
             <select
               value={activeMonth}
               onChange={(e) => handleMonthChange(e.target.value)}
-              className="w-full bg-white dark:bg-slate-900 border border-technical-border text-xs font-mono text-slate-700 dark:text-slate-200 px-4 py-2 rounded focus:outline-none focus:border-accent-green cursor-pointer appearance-none pr-8 uppercase"
+              className="w-full bg-white dark:bg-slate-900 border border-technical-border text-xs font-mono text-slate-700 dark:text-slate-200 px-4 py-2.5 rounded focus:outline-none focus:border-accent-green cursor-pointer appearance-none pr-8 uppercase"
             >
               <option value="2026-06">June 2026</option>
               <option value="2026-07">July 2026</option>
@@ -730,9 +790,22 @@ export default function App() {
             <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
 
+          {/* Reset App State button (User Request) */}
+          <button
+            onClick={handleResetData}
+            className={`text-[11px] font-bold py-2.5 px-4 rounded uppercase tracking-widest transition cursor-pointer shrink-0 font-sans shadow-sm border ${
+              resetConfirmState
+                ? "bg-rose-600 hover:bg-rose-700 text-white border-rose-600 animate-pulse"
+                : "bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-technical-border"
+            }`}
+            title="Reset and revert all application data to default demo state"
+          >
+            {resetConfirmState ? "Confirm Revert?" : "Reset & Revert"}
+          </button>
+
           <button
             onClick={processRecurringMonthTemplates}
-            className="bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 dark:text-slate-900 text-white text-[11px] font-bold py-2.5 px-4.5 rounded uppercase tracking-widest transition cursor-pointer shrink-0 font-sans shadow-sm"
+            className="bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-slate-200 dark:text-slate-900 text-white text-[11px] font-bold py-2.5 px-4 rounded uppercase tracking-widest transition cursor-pointer shrink-0 font-sans shadow-sm"
           >
             Process New Month
           </button>
