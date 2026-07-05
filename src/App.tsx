@@ -211,63 +211,7 @@ export default function App() {
     }
   }, [isDarkMode]);
 
-  // Confirmation state for data reset
-  const [resetConfirmState, setResetConfirmState] = useState<boolean>(false);
 
-  // Automatically reset the confirmation after 4 seconds of inactivity
-  useEffect(() => {
-    if (resetConfirmState) {
-      const timer = setTimeout(() => {
-        setResetConfirmState(false);
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [resetConfirmState]);
-
-  // Reset all application data and revert to beautifully seeded defaults
-  const handleResetData = () => {
-    if (!resetConfirmState) {
-      setResetConfirmState(true);
-      showToast("Click the button again within 4 seconds to confirm full reset!");
-      return;
-    }
-
-    // 1. Clear local storage keys
-    const keysToRemove = [
-      'vibebudget_months',
-      'vibebudget_cards',
-      'vibebudget_bank',
-      'vibebudget_recurring',
-      'vibebudget_learned',
-      'vibebudget_active_tab',
-      'vibebudget_savings_goals'
-    ];
-    keysToRemove.forEach(k => localStorage.removeItem(k));
-
-    // 2. Re-seed React states with zero values
-    setActiveMonth("2026-07");
-    const zeroCategories = INITIAL_CATEGORIES.map(cat => ({ ...cat, budgeted: 0 }));
-    setMonthsState({
-      "2026-07": {
-        monthId: "2026-07",
-        categories: zeroCategories,
-        transactions: [],
-        incomeSources: []
-      }
-    });
-    setCreditCards([
-      { id: 'card-disc', name: 'Discover Card', currentBalance: 0, creditLimit: 5000, dueDate: '2026-07-15', statementClosingDate: '2026-07-08' },
-      { id: 'card-chase', name: 'Chase Sapphire', currentBalance: 0, creditLimit: 12000, dueDate: '2026-07-04', statementClosingDate: '2026-07-01' },
-    ]);
-    setBankAccount({ id: 'bank-checking', name: 'Chase Liquidity Checking', balance: 0, type: 'checking' });
-    setActiveTab('budget');
-    setSavingsGoals([]);
-    setRecurringItems([]);
-    setLearnedMappings({});
-    setResetConfirmState(false);
-
-    showToast("Application successfully reset. All budgets, transactions, and balances are set to zero!");
-  };
 
   // Retrieve current active month state, or initialize if empty
   const currentMonthState: MonthState = monthsState[activeMonth] || {
@@ -787,19 +731,6 @@ export default function App() {
             </select>
             <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
-
-          {/* Reset App State button (User Request) */}
-          <button
-            onClick={handleResetData}
-            className={`text-[11px] font-bold py-2.5 px-4 rounded uppercase tracking-widest transition cursor-pointer shrink-0 font-sans shadow-sm border ${
-              resetConfirmState
-                ? "bg-rose-600 hover:bg-rose-700 text-white border-rose-600 animate-pulse"
-                : "bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-technical-border"
-            }`}
-            title="Reset and revert all application data to default demo state"
-          >
-            {resetConfirmState ? "Confirm Revert?" : "Reset & Revert"}
-          </button>
 
           <button
             onClick={processRecurringMonthTemplates}
